@@ -1,0 +1,13 @@
+_target_: src.data.datamodule.DataModule
+
+images_dir: ${paths.images_dir.raw}
+images_metadata_path: ${paths.csv_dir.processed}/processed_images.csv
+train_transforms: 
+  _target_: src.data.transforms.default.get_transforms.train
+  font_path: ${paths.fonts.impact}
+val_transforms: 
+  _target_: src.data.transforms.default.get_transforms.test
+batch_size: 64
+n_train_copies: 15
+num_workers: 6
+pin_memory: False

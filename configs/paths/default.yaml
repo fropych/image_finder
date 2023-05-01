@@ -1,0 +1,14 @@
+root_dir: ${oc.env:PROJECT_ROOT}
+data_dir: ${paths.root_dir}/data
+fonts_dir: ${paths.root_dir}/data/fonts
+
+images_dir: 
+  raw: ${paths.data_dir}/images/raw
+  processed: ${paths.data_dir}/images/processed
+
+csv_dir: 
+  raw: ${paths.data_dir}/csv/raw
+  processed: ${paths.data_dir}/csv/processed
+
+fonts:
+  impact: ${paths.fonts_dir}/impact.ttf

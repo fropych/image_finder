@@ -1,0 +1,8 @@
+train:
+  _target_: torchvision.transforms.Compose
+  transforms:
+   - _target_: torchvision.transforms.Resize
+   
+   - _target_: src.data.custom_transfroms.RandomText
+   - _target_: src.data.custom_transfroms.RandomCircle
+   
