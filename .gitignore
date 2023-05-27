@@ -96,3 +96,6 @@ outputs/*
 
 #lightning
 lightning_logs/*
+
+#wandb
+wandb/*

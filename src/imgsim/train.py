@@ -6,7 +6,7 @@ import pyrootutils
 import torch
 import timm
 from lightning import Callback, LightningDataModule, LightningModule, Trainer
-from lightning.pytorch.loggers import Logger
+from lightning.pytorch.loggers import Logger, WandbLogger
 from omegaconf import DictConfig
 
 # root = pyrootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
@@ -26,6 +26,10 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
         Tuple[dict, dict]: Dict with metrics and dict with all instantiated objects.
     """
 
+    wandb_logger = WandbLogger(
+        project="ImgSim",
+    )
+
     if cfg.get("seed"):
         L.seed_everything(cfg.seed, workers=True)
 
@@ -36,6 +40,7 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
 
     model: LightningModule = hydra.utils.instantiate(cfg.model)
     trainer: Trainer = hydra.utils.instantiate(cfg.trainer)
+    trainer = trainer(logger=wandb_logger)
 
     object_dict = {
         "cfg": cfg,
