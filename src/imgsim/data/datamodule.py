@@ -8,9 +8,9 @@ from sklearn.preprocessing import LabelEncoder
 from torch.utils.data import ConcatDataset, DataLoader, Dataset, random_split
 from torchvision.transforms import transforms, Compose
 
-from src.data import make_dataset
-from src.data.components.dataset import ImageDataset
-from src.data.utils.encoders import LabelEncoder
+from . import make_dataset
+from .components.dataset import ImageDataset
+from .utils.encoders import LabelEncoder
 
 
 class DataModule(LightningDataModule):
@@ -41,7 +41,7 @@ class DataModule(LightningDataModule):
         self.train_metadata = images_metadata.query("isTemplate")
         self.val_metadata = images_metadata.query("~isTemplate")
         self.n_train_copies = n_train_copies
-        
+
         self.data_train: Optional[ImageDataset] = None
         self.data_val: Optional[ImageDataset] = None
         # self.data_test: Optional[ImageDataset] = None

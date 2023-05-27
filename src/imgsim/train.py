@@ -9,7 +9,7 @@ from lightning import Callback, LightningDataModule, LightningModule, Trainer
 from lightning.pytorch.loggers import Logger
 from omegaconf import DictConfig
 
-root = pyrootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
+# root = pyrootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
 
 def train(cfg: DictConfig) -> Tuple[dict, dict]:
@@ -62,6 +62,7 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
 
 def main(cfg: DictConfig):
     metric_dict, _ = train(cfg)
+    print(metric_dict)
     return metric_dict
 
 

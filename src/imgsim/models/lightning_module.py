@@ -3,7 +3,7 @@ from typing import Any
 import torch
 from lightning import LightningModule
 from torchmetrics import MaxMetric, MeanMetric
-from torchmetrics import Accuracy, F1Score
+from torchmetrics import Accuracy, F1Score, Recall
 
 
 class LitModule(LightningModule):
@@ -37,8 +37,12 @@ class LitModule(LightningModule):
 
         self.train_acc = Accuracy(task="multiclass", num_classes=num_classes)
         self.val_acc = Accuracy(task="multiclass", num_classes=num_classes)
-        self.train_f1 = F1Score(task="multiclass", num_classes=num_classes)
-        self.val_f1 = F1Score(task="multiclass", num_classes=num_classes)
+        self.train_f1 = F1Score(
+            task="multiclass", num_classes=num_classes, average="macro"
+        )
+        self.val_f1 = F1Score(
+            task="multiclass", num_classes=num_classes, average="macro"
+        )
 
         self.train_loss = MeanMetric()
         self.val_loss = MeanMetric()
@@ -50,8 +54,11 @@ class LitModule(LightningModule):
 
     def on_train_start(self):
         self.val_loss.reset()
+
         self.val_acc.reset()
         self.val_acc_best.reset()
+
+        self.val_f1.reset()
         self.val_f1_best.reset()
 
     def model_step(self, batch: Any):
@@ -84,11 +91,12 @@ class LitModule(LightningModule):
         loss, preds, targets = self.model_step(batch)
 
         self.val_loss(loss)
-        self.val_acc(preds, targets)
         self.val_f1(preds, targets)
+        self.val_acc(preds, targets)
+
         self.log("val_loss", self.val_loss, on_step=False, on_epoch=True, prog_bar=True)
-        self.log("val_acc", self.val_acc, on_step=False, on_epoch=True, prog_bar=True)
         self.log("val_f1", self.val_f1, on_step=False, on_epoch=True, prog_bar=True)
+        self.log("val_acc", self.val_acc, on_step=False, on_epoch=True, prog_bar=True)
 
     def on_validation_epoch_end(self):
         acc = self.val_acc.compute()

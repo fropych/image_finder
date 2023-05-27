@@ -1,12 +1,11 @@
 import hydra
-from lightning import LightningDataModule, LightningModule
 import pyrootutils
 from omegaconf import DictConfig
+from src.imgsim import train
+from src.imgsim.data import get_transforms
+import os
 
-from src.data.datamodule import DataModule
-from src.models.lightning_module import LitModule
-from src import train
-
+os.environ["HYDRA_FULL_ERROR"] = "1"
 pyrootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
 
@@ -14,5 +13,7 @@ pyrootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 def main(cfg: DictConfig):
     train.main(cfg)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
+    print(get_transforms.test())
     main()

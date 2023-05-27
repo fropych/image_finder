@@ -10,7 +10,7 @@ import pyrootutils
 from tqdm.asyncio import tqdm_asyncio
 import pandas as pd
 
-root = pyrootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
+# root = pyrootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
 
 url_base = "https://imgflip.com"

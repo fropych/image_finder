@@ -1,5 +1,5 @@
 from torchvision import transforms
-from src.data.components.custom_transforms import RandomText, RandomCircle
+from .. import RandomText, RandomCircle
 
 
 def train(font_path):
@@ -17,6 +17,7 @@ def train(font_path):
         ]
     )
     return train_transforms
+
 
 def test():
     test_transforms = transforms.Compose(
