@@ -3,11 +3,16 @@ from typing import Tuple
 import hydra
 import lightning as L
 import pyrootutils
+import torch
 from lightning import LightningDataModule, LightningModule, Trainer
 from lightning.pytorch.loggers import WandbLogger
 from omegaconf import DictConfig
 
+from . import utils
+
 pyrootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
+
+log = utils.get_pylogger(__name__)
 
 
 def train(cfg: DictConfig) -> Tuple[dict, dict]:
@@ -31,12 +36,16 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     if cfg.get("seed"):
         L.seed_everything(cfg.seed, workers=True)
 
+    log.info(f"Instantiating datamodule <{cfg.data._target_}>")
     datamodule: LightningDataModule = hydra.utils.instantiate(cfg.data)
 
     cfg.model.num_classes = datamodule.num_classes
     cfg.model.net.num_classes = datamodule.num_classes
 
+    log.info(f"Instantiating model <{cfg.model._target_}>")
     model: LightningModule = hydra.utils.instantiate(cfg.model)
+
+    log.info(f"Instantiating trainer <{cfg.trainer._target_}>")
     trainer: Trainer = hydra.utils.instantiate(cfg.trainer)
     trainer = trainer(logger=wandb_logger)
 

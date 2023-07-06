@@ -8,7 +8,6 @@ class RandomText:
     alphabet = list(string.ascii_letters)+[' ', '\n']
     def __init__(self, font) -> None:
         self.font = font
-        print(font)
     
     def __call__(self, img: Image):
         img = img.copy()
