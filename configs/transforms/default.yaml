@@ -3,6 +3,6 @@ train:
   transforms:
    - _target_: torchvision.transforms.Resize
    
-   - _target_: imgsim.data.custom_transfroms.RandomText
-   - _target_: imgsim.data.custom_transfroms.RandomCircle
+   - _target_: src.data.custom_transfroms.RandomText
+   - _target_: src.data.custom_transfroms.RandomCircle
    

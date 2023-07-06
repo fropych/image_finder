@@ -1,4 +1,4 @@
-_target_: src.imgsim.models.lightning_module.LitModule
+_target_: src.models.lightning_module.LitModule
 
 num_classes: null
 

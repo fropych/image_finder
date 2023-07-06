@@ -2,9 +2,12 @@ from typing import Tuple
 
 import hydra
 import lightning as L
+import pyrootutils
 from lightning import LightningDataModule, LightningModule, Trainer
 from lightning.pytorch.loggers import WandbLogger
 from omegaconf import DictConfig
+
+pyrootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
 
 def train(cfg: DictConfig) -> Tuple[dict, dict]:
@@ -60,7 +63,7 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     return metric_dict, object_dict
 
 
-@hydra.main(version_base="1.2", config_path="configs", config_name="train.yaml")
+@hydra.main(version_base="1.2", config_path="../configs", config_name="train.yaml")
 def main(cfg: DictConfig):
     train(cfg)
 
