@@ -1,15 +1,10 @@
-from typing import List, Optional, Tuple
+from typing import Tuple
 
 import hydra
 import lightning as L
-import pyrootutils
-import torch
-import timm
-from lightning import Callback, LightningDataModule, LightningModule, Trainer
-from lightning.pytorch.loggers import Logger, WandbLogger
+from lightning import LightningDataModule, LightningModule, Trainer
+from lightning.pytorch.loggers import WandbLogger
 from omegaconf import DictConfig
-
-# root = pyrootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
 
 def train(cfg: DictConfig) -> Tuple[dict, dict]:
@@ -25,7 +20,7 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     Returns:
         Tuple[dict, dict]: Dict with metrics and dict with all instantiated objects.
     """
-
+    # TODO: add confusion matrix https://www.ravirajag.dev/blog/mlops-wandb-integration
     wandb_logger = WandbLogger(
         project="ImgSim",
     )
@@ -65,10 +60,9 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     return metric_dict, object_dict
 
 
+@hydra.main(version_base="1.2", config_path="configs", config_name="train.yaml")
 def main(cfg: DictConfig):
-    metric_dict, _ = train(cfg)
-    print(metric_dict)
-    return metric_dict
+    train(cfg)
 
 
 if __name__ == "__main__":
