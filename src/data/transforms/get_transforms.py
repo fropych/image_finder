@@ -1,5 +1,6 @@
 from torchvision import transforms
-from .. import RandomText, RandomCircle
+
+from .custom_transforms import RandomCircle, RandomText
 
 
 def train(font_path):

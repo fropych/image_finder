@@ -1,8 +1,8 @@
 import hydra
 import pyrootutils
 from omegaconf import DictConfig
-from src.imgsim import train
-from src.imgsim.data import get_transforms
+from src import train
+from src.data import get_transforms
 import os
 
 os.environ["HYDRA_FULL_ERROR"] = "1"

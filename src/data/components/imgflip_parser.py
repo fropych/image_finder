@@ -1,14 +1,15 @@
-from pathlib import Path
-import re
-import aiohttp
 import asyncio
+import re
+from pathlib import Path
+
 import aiofiles
+import aiohttp
 import hydra
+import pandas as pd
+import pyrootutils
 from bs4 import BeautifulSoup
 from omegaconf import DictConfig
-import pyrootutils
 from tqdm.asyncio import tqdm_asyncio
-import pandas as pd
 
 # root = pyrootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 

@@ -2,8 +2,7 @@ from typing import Any
 
 import torch
 from lightning import LightningModule
-from torchmetrics import MaxMetric, MeanMetric
-from torchmetrics import Accuracy, F1Score, Recall
+from torchmetrics import Accuracy, F1Score, MaxMetric, MeanMetric, Recall
 
 
 class LitModule(LightningModule):

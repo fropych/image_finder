@@ -1,10 +1,11 @@
-from omegaconf import DictConfig
-from .components import imgflip_parser, process_images
+from pathlib import Path
 
 import hydra
 import pyrootutils
 from hydra import compose, initialize
-from pathlib import Path
+from omegaconf import DictConfig
+
+from .components import imgflip_parser, process_images
 
 # root = pyrootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 

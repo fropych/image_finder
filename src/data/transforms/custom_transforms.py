@@ -1,7 +1,8 @@
-from PIL import ImageFont, ImageDraw, Image
-from numpy import random
 import string
-random.seed(42)
+
+from numpy import random
+from PIL import Image, ImageDraw, ImageFont
+
 
 class RandomText:
     
