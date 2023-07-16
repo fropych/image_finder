@@ -99,3 +99,7 @@ lightning_logs/*
 
 #wandb
 wandb/*
+
+###
+
+notebooks/*

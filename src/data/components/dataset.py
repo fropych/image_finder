@@ -18,10 +18,10 @@ class ImageDataset(Dataset):
 
     def __getitem__(self, index):
         row = self.dataframe.iloc[index]
-
+        image = self.transform(Image.open(row[self.get_x]).convert("RGB"))
         if self.test:
-            return (self.transform(Image.open(row[self.get_x]).convert("RGB")),)
+            return (image,)
         return (
-            self.transform(Image.open(row[self.get_x]).convert("RGB")),
+            image,
             row["label"],
         )

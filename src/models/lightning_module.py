@@ -1,25 +1,14 @@
 from typing import Any
+from itertools import chain
 
 import torch
+import numpy as np
+from sklearn.neighbors import KNeighborsClassifier
 from lightning import LightningModule
 from torchmetrics import Accuracy, F1Score, MaxMetric, MeanMetric, Recall
 
 
 class LitModule(LightningModule):
-    """Example of LightningModule for MNIST classification.
-
-    A LightningModule organizes your PyTorch code into 6 sections:
-        - Initialization (__init__)
-        - Train Loop (training_step)
-        - Validation loop (validation_step)
-        - Test loop (test_step)
-        - Prediction Loop (predict_step)
-        - Optimizers and LR Schedulers (configure_optimizers)
-
-    Docs:
-        https://lightning.ai/docs/pytorch/latest/common/lightning_module.html
-    """
-
     def __init__(
         self,
         net: torch.nn.Module,
@@ -33,12 +22,9 @@ class LitModule(LightningModule):
 
         self.net = net
         self.criterion = criterion
+        self.num_classes = num_classes
 
-        self.train_acc = Accuracy(task="multiclass", num_classes=num_classes)
         self.val_acc = Accuracy(task="multiclass", num_classes=num_classes)
-        self.train_f1 = F1Score(
-            task="multiclass", num_classes=num_classes, average="macro"
-        )
         self.val_f1 = F1Score(
             task="multiclass", num_classes=num_classes, average="macro"
         )
@@ -48,8 +34,24 @@ class LitModule(LightningModule):
         self.val_acc_best = MaxMetric()
         self.val_f1_best = MaxMetric()
 
+        self.knn = None
+
     def forward(self, x: torch.Tensor):
         return self.net(x)
+
+    def model_step(self, batch: Any):
+        x, y = batch
+        logits = self.forward(x)
+        loss = self.criterion(logits, y)
+        return loss, logits, y
+
+    def predict_step(self, batch: Any, batch_idx: int) -> np.ndarray:
+        if self.knn is None:
+            raise RuntimeError("Not trained")
+        embeds = self.forward(batch)
+        preds = self.knn.predict(embeds.cpu().tolist())
+
+        return preds
 
     def on_train_start(self):
         self.val_loss.reset()
@@ -60,34 +62,39 @@ class LitModule(LightningModule):
         self.val_f1.reset()
         self.val_f1_best.reset()
 
-    def model_step(self, batch: Any):
-        x, y = batch
-        logits = self.forward(x)
-        loss = self.criterion(logits, y)
-        preds = torch.argmax(logits, dim=1)
-        return loss, preds, y
-
     def training_step(self, batch: Any, batch_idx: int):
-        loss, preds, targets = self.model_step(batch)
+        loss, _, _ = self.model_step(batch)
 
         self.train_loss(loss)
-        self.train_acc(preds, targets)
-        self.train_f1(preds, targets)
         self.log(
             "train_loss", self.train_loss, on_step=False, on_epoch=True, prog_bar=True
         )
-        self.log(
-            "train_acc", self.train_acc, on_step=False, on_epoch=True, prog_bar=True
-        )
-        self.log("train_f1", self.train_f1, on_step=False, on_epoch=True, prog_bar=True)
 
         return loss
 
+    @torch.no_grad()
     def on_train_epoch_end(self):
-        pass
+        self.eval()
+        embeds = [[], []]
+        for batch in self.trainer.train_dataloader:
+            x, y = batch
+            logits = self.forward(x.to(self.device))
+            embeds[0].extend(logits.tolist())
+            embeds[1].extend(y.tolist())
+
+        x, y = np.array(embeds[0]), np.array(embeds[1])
+        self.knn = KNeighborsClassifier(metric="cosine")
+        self.knn = self.knn.fit(x, y)
 
     def validation_step(self, batch: Any, batch_idx: int):
-        loss, preds, targets = self.model_step(batch)
+        loss, embeds, targets = self.model_step(batch)
+        if self.knn is None:
+            preds = torch.zeros(
+                (batch[0].shape[0], self.num_classes), device=self.device
+            )
+        else:
+            preds = self.knn.predict(embeds.cpu().tolist())
+            preds = torch.tensor(preds, device=targets.device)
 
         self.val_loss(loss)
         self.val_f1(preds, targets)
@@ -106,13 +113,9 @@ class LitModule(LightningModule):
         self.log("val_f1_best", self.val_f1_best.compute(), prog_bar=True)
 
     def configure_optimizers(self):
-        """Choose what optimizers and learning-rate schedulers to use in your optimization.
-        Normally you'd need one. But in the case of GANs or similar you might have multiple.
-
-        Examples:
-            https://lightning.ai/docs/pytorch/latest/common/lightning_module.html#configure-optimizers
-        """
-        optimizer = self.hparams.optimizer(params=self.parameters())
+        optimizer = self.hparams.optimizer(
+            params=chain(self.parameters(), self.hparams.criterion.parameters())
+        )
         if self.hparams.scheduler is not None:
             scheduler = self.hparams.scheduler(optimizer=optimizer)
             return {

@@ -8,9 +8,10 @@ from lightning import LightningDataModule, LightningModule, Trainer
 from lightning.pytorch.loggers import WandbLogger
 from omegaconf import DictConfig
 
-from . import utils
 
 pyrootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
+
+from src import utils
 
 log = utils.get_pylogger(__name__)
 
@@ -19,9 +20,6 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     """Trains the model. Can additionally evaluate on a testset, using best weights obtained during
     training.
 
-    This method is wrapped in optional @task_wrapper decorator, that controls the behavior during
-    failure. Useful for multiruns, saving info about the crash, etc.
-
     Args:
         cfg (DictConfig): Configuration composed by Hydra.
 
@@ -29,9 +27,10 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
         Tuple[dict, dict]: Dict with metrics and dict with all instantiated objects.
     """
     # TODO: add confusion matrix https://www.ravirajag.dev/blog/mlops-wandb-integration
-    wandb_logger = WandbLogger(
-        project="ImgSim",
-    )
+    wandb_logger = None
+    # wandb_logger = WandbLogger(
+    #     project="ImgSim",
+    # )
 
     if cfg.get("seed"):
         L.seed_everything(cfg.seed, workers=True)
@@ -40,7 +39,7 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     datamodule: LightningDataModule = hydra.utils.instantiate(cfg.data)
 
     cfg.model.num_classes = datamodule.num_classes
-    cfg.model.net.num_classes = datamodule.num_classes
+    cfg.model.criterion.num_classes = datamodule.num_classes
 
     log.info(f"Instantiating model <{cfg.model._target_}>")
     model: LightningModule = hydra.utils.instantiate(cfg.model)
