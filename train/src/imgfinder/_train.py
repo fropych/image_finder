@@ -2,16 +2,12 @@ from typing import Tuple
 
 import hydra
 import lightning as L
-import pyrootutils
-import torch
 from lightning import LightningDataModule, LightningModule, Trainer
 from lightning.pytorch.loggers import WandbLogger
 from omegaconf import DictConfig
 
 from . import utils
 
-
-# pyrootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
 log = utils.get_pylogger("imgfinder")
 
@@ -27,10 +23,9 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
         Tuple[dict, dict]: Dict with metrics and dict with all instantiated objects.
     """
     # TODO: add confusion matrix https://www.ravirajag.dev/blog/mlops-wandb-integration
-    wandb_logger = None
-    # wandb_logger = WandbLogger(
-    #     project="ImgSim",
-    # )
+    wandb_logger = WandbLogger(
+        project="Image Finder",
+    )
 
     if cfg.get("seed"):
         L.seed_everything(cfg.seed, workers=True)
