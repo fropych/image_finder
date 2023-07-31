@@ -34,7 +34,7 @@ def get_duplicates(a, b, splitter=3):
     return np.unique(img_diff)
 
 
-def main(cfg: DictConfig):
+def process_images(cfg: DictConfig):
     image_df = pd.read_csv(Path(cfg.paths.csv_dir.raw) / "raw_images.csv")
 
     def get_hashes(path):
@@ -61,7 +61,3 @@ def main(cfg: DictConfig):
         encoding="utf-8",
         index=False,
     )
-
-
-if __name__ == "__main__":
-    main()

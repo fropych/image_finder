@@ -83,7 +83,7 @@ async def proccess_page(session, html, image_data, path_to_save):
                 )
 
 
-async def parse(path_to_save):
+async def _parse(path_to_save):
     async with aiohttp.ClientSession() as session:
         path_to_save.mkdir(parents=True, exist_ok=True)
 
@@ -103,18 +103,14 @@ async def parse(path_to_save):
     return image_data
 
 
-async def async_main(csv_dir, raw_images_dir):
-    image_data = await parse(raw_images_dir)
+async def async_parse(csv_dir, raw_images_dir):
+    image_data = await _parse(raw_images_dir)
 
     df = pd.DataFrame(image_data)
     df.to_csv(csv_dir / "raw_images.csv", encoding="utf-8", index=False)
 
 
-def main(cfg: DictConfig):
+def parse(cfg: DictConfig):
     csv_dir = Path(cfg.paths.csv_dir.raw)
     raw_images_dir = Path(cfg.paths.images_dir.raw)
-    asyncio.run(async_main(csv_dir, raw_images_dir))
-
-
-if __name__ == "__main__":
-    main()
+    asyncio.run(async_parse(csv_dir, raw_images_dir))

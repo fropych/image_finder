@@ -1,17 +1,39 @@
+import os
+
 import hydra
+import pyrootutils
 from prefect import flow, task
-from pprint import pprint
+
+from imgfinder import train
+from parser import parse, process_images
+
+root = pyrootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
+os.environ["PROJECT_ROOT"] = str(root.absolute())
 
 
-@task(retries=2)
-def print_cfg(cfg):
-    pprint(cfg)
+@task(retries=3)
+def parse_data(cfg):
+    return cfg
+    parse(cfg)
+
+
+@task
+def process_data(cfg):
+    return cfg
+    process_images(cfg)
+
+
+@task
+def train_model(cfg):
+    train(cfg)
 
 
 @hydra.main(version_base="1.1", config_path="../configs", config_name="train.yaml")
-@flow(name="Repo Info", log_prints=True)
+@flow(name="Train Model", log_prints=True)
 def main(cfg):
-    print_cfg(cfg)
+    cfg = parse_data(cfg)
+    cfg = process_data(cfg)
+    train_model(cfg)
 
 
 if __name__ == "__main__":

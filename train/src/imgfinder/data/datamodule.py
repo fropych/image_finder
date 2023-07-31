@@ -9,7 +9,6 @@ from sklearn.preprocessing import LabelEncoder
 from torch.utils.data import ConcatDataset, DataLoader, Dataset, random_split
 from torchvision.transforms import Compose, transforms
 
-from . import make_dataset
 from .components.dataset import ImageDataset
 from .utils.encoders import LabelEncoder
 
