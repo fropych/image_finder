@@ -4,15 +4,10 @@ from pathlib import Path
 
 import aiofiles
 import aiohttp
-import hydra
 import pandas as pd
-import pyrootutils
 from bs4 import BeautifulSoup
 from omegaconf import DictConfig
 from tqdm.asyncio import tqdm_asyncio
-
-# root = pyrootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
-
 
 url_base = "https://imgflip.com"
 unique_filenames = set()

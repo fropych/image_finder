@@ -1,15 +1,11 @@
 from pathlib import Path
 
-import hydra
 import imagehash
 import numba
 import numpy as np
 import pandas as pd
-import pyrootutils
 from omegaconf import DictConfig
 from PIL import Image
-
-# root = pyrootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
 
 # TODO ERROR WITH B = NONE
