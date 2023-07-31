@@ -1,4 +1,4 @@
-_target_: src.models.lightning_module.LitModule
+_target_: imgfinder.models.lightning_module.LitModule
 
 num_classes: null
 
@@ -21,6 +21,6 @@ criterion:
   embedding_size: 256
 
 net:
-  _target_: src.models.vision_model.get_vision_embedder
+  _target_: imgfinder.models.vision_model.get_vision_embedder
   name: vit_small_patch32_224_in21k
   embed_size: 256

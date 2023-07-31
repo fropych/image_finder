@@ -8,10 +8,10 @@ from lightning import LightningDataModule, LightningModule, Trainer
 from lightning.pytorch.loggers import WandbLogger
 from omegaconf import DictConfig
 
+from . import utils
 
-pyrootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
-from src import utils
+# pyrootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
 log = utils.get_pylogger(__name__)
 
@@ -69,12 +69,3 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     metric_dict = {**train_metrics, **test_metrics}
 
     return metric_dict, object_dict
-
-
-@hydra.main(version_base="1.2", config_path="../configs", config_name="train.yaml")
-def main(cfg: DictConfig):
-    train(cfg)
-
-
-if __name__ == "__main__":
-    main()

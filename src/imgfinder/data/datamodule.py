@@ -59,7 +59,6 @@ class DataModule(LightningDataModule):
         Do not use it to assign state (self.x = y).
         """
         return
-        make_dataset.main()
 
     def setup(self, stage: Optional[str] = None):
         """Load data. Set variables: `self.data_train`, `self.data_test`.

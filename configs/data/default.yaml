@@ -1,12 +1,12 @@
-_target_: src.data.datamodule.DataModule
+_target_: imgfinder.datamodule.DataModule
 
 images_dir: ${paths.images_dir.raw}
 images_metadata_path: ${paths.csv_dir.processed}/processed_images.csv
 train_transforms: 
-  _target_: src.data.transforms.get_transforms.train
+  _target_: imgfinder.data.transforms.get_transforms.train
   font_path: ${paths.fonts.impact}
 val_transforms: 
-  _target_: src.data.transforms.get_transforms.test
+  _target_: imgfinder.data.transforms.get_transforms.test
 batch_size: 256
 n_train_copies: 20
 num_workers: 6
