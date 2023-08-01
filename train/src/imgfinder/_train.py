@@ -2,6 +2,7 @@ from typing import Tuple
 
 import hydra
 import lightning as L
+import wandb
 from lightning import LightningDataModule, LightningModule, Trainer
 from lightning.pytorch.loggers import WandbLogger
 from omegaconf import DictConfig
@@ -50,17 +51,21 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
         "trainer": trainer,
     }
 
-    if cfg.get("train"):
+    if cfg.train:
         trainer.fit(model=model, datamodule=datamodule, ckpt_path=cfg.get("ckpt_path"))
 
     train_metrics = trainer.callback_metrics
 
-    if cfg.get("test"):
+    if cfg.test:
         ckpt_path = None
         trainer.test(model=model, datamodule=datamodule, ckpt_path=ckpt_path)
-
     test_metrics = trainer.callback_metrics
-
     metric_dict = {**train_metrics, **test_metrics}
+
+    if cfg.save_model_wandb:
+        model_art = wandb.Artifact(f"vit-emb", type="model")
+        model_art.add_file(trainer.checkpoint_callback.best_model_path, "model.pt")
+        wandb.log(metric_dict)
+        wandb.log_artifact(model_art, aliases=["latest", "best"])
 
     return metric_dict, object_dict

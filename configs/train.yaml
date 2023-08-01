@@ -9,3 +9,4 @@ train: True
 test: False
 ckpt_path: null
 seed: 42
+save_model_wandb: True

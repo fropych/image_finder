@@ -1,6 +1,6 @@
 _target_: lightning.pytorch.trainer.Trainer
 _partial_: true
-max_epochs: 20
+max_epochs: 2
 
 accelerator: gpu
 devices: 1
@@ -18,7 +18,7 @@ deterministic: False
 callbacks: 
   - _target_: lightning.pytorch.callbacks.ModelCheckpoint
     monitor: val_f1
-    dirpath: models
-    filename: model-{val_loss:.3f}
+    dirpath: ${paths.root_dir}/models
+    filename: model-{val_f1:.3f}
     save_top_k: 1
-    mode: min
+    mode: max
