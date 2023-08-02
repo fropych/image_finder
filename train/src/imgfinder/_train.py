@@ -63,9 +63,28 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     metric_dict = {**train_metrics, **test_metrics}
 
     if cfg.save_model_wandb:
-        model_art = wandb.Artifact(f"vit-emb", type="model")
+        model_art = wandb.Artifact(f"vit-emb", type="model", metadata=metric_dict)
         model_art.add_file(trainer.checkpoint_callback.best_model_path, "model.pt")
-        wandb.log(metric_dict)
-        wandb.log_artifact(model_art, aliases=["latest", "best"])
+
+        try:
+            artifact = wandb.use_artifact(
+                "mr-misister/model-registry/Image Embedder:best", type="model"
+            )
+            best_score = artifact.metadata["val_f1_best"]
+        except wandb.CommError as exception:
+            best_score = -1
+            log.info(
+                f"There is no saved model on wandb. This model will be saved as best"
+            )
+
+        aliases = ["latest"]
+        wandb.log_artifact(model_art, aliases=aliases)
+
+        if metric_dict["val_f1_best"] > best_score:
+            aliases.append("best")
+
+            wandb.run.link_artifact(
+                model_art, "mr-misister/model-registry/Image Embedder", aliases=aliases
+            )
 
     return metric_dict, object_dict

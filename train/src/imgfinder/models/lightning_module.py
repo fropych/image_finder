@@ -83,7 +83,7 @@ class LitModule(LightningModule):
             embeds[1].extend(y.tolist())
 
         x, y = np.array(embeds[0]), np.array(embeds[1])
-        self.knn = KNeighborsClassifier(metric="cosine")
+        self.knn = KNeighborsClassifier(metric="cosine", n_jobs=-1)
         self.knn = self.knn.fit(x, y)
 
     def validation_step(self, batch: Any, batch_idx: int):
