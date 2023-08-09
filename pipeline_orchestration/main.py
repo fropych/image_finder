@@ -13,13 +13,11 @@ os.environ["PROJECT_ROOT"] = str(root.absolute())
 
 @task(retries=3)
 def parse_data(cfg):
-    return cfg
     parse(cfg)
 
 
 @task
 def process_data(cfg):
-    return cfg
     process_images(cfg)
 
 
